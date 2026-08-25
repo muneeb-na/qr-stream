@@ -146,6 +146,12 @@
             <input type="file" id="file-input" accept="image/*,video/*" />
             <button id="btn-start-send" class="action-btn hidden">Start QR Stream</button>
             
+            <!-- Stop and Resume Controls -->
+            <div id="sender-controls" class="hidden" style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="btn-stop-send" class="action-btn" style="margin-top: 0; background: #ef4444;">Stop Stream</button>
+                <button id="btn-resume-send" class="action-btn hidden" style="margin-top: 0; background: #22c55e;">Resume Stream</button>
+            </div>
+            
             <div id="qr-container" class="hidden"></div>
             <p id="send-progress" class="progress-text"></p>
         </div>
@@ -175,15 +181,23 @@
         tabSend.addEventListener('click', () => {
             tabSend.classList.add('active');
             tabReceive.classList.remove('active');
+            
+            // Also swap the visible sections
+            document.getElementById('sender-section').classList.remove('hidden');
+            document.getElementById('receiver-section').classList.add('hidden');
         });
 
         tabReceive.addEventListener('click', () => {
             tabReceive.classList.add('active');
             tabSend.classList.remove('active');
+            
+            // Also swap the visible sections
+            document.getElementById('receiver-section').classList.remove('hidden');
+            document.getElementById('sender-section').classList.add('hidden');
         });
     </script>
 
-    <!-- Your existing logic scripts -->
+    <!-- Your custom logic scripts -->
     <script src="sender.js"></script>
     <script src="receiver.js"></script>
 </body>
