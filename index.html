@@ -3,98 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Stream Transfer</title>
+    <title>QR Stream</title>
     <style>
+        /* Clean, human-made CSS variables for consistent colors */
+        :root {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text: #ffffff;
+            --text-muted: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            text-align: center; 
-            background-color: #121212; 
-            color: #ffffff; 
-            padding: 20px; 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
-        .hidden { display: none !important; }
+
+        /* Mobile-app style main container */
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            margin-top: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .header p { color: var(--text-muted); font-size: 0.9rem; }
+        
+        /* Modern Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: var(--card-bg);
+            color: var(--text-muted);
+            border: 2px solid transparent;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background: #2a2a2a; }
+        
+        /* The active tab gets highlighted */
+        .tab-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
         .card { 
-            background: #1e1e1e; 
-            padding: 20px; 
+            background: var(--card-bg); 
+            padding: 24px; 
             border-radius: 12px; 
-            max-width: 500px; 
-            margin: 20px auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-align: center;
         }
-        button { 
-            background: #6366f1; 
+        
+        .hidden { display: none !important; }
+        
+        .action-btn { 
+            background: var(--primary); 
             color: white; 
             border: none; 
             padding: 12px 24px; 
             border-radius: 8px; 
             cursor: pointer; 
-            font-weight: bold; 
-            margin: 10px; 
+            font-weight: 600; 
+            width: 100%;
+            margin-top: 15px;
             transition: 0.2s;
         }
-        button:hover { background: #4f46e5; }
-        #qr-container { 
-            margin-top: 20px; 
-            display: flex; 
-            justify-content: center; 
-            background: white;
+        .action-btn:hover { background: var(--primary-hover); }
+        .action-btn:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
+        
+        input[type="file"] {
+            margin: 15px 0;
+            width: 100%;
             padding: 10px;
+            background: #2a2a2a;
             border-radius: 8px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
+            border: 1px dashed var(--text-muted);
+            color: var(--text);
         }
+        
+        #qr-container { 
+            margin: 20px auto 0;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
         #reader { 
             width: 100%; 
-            max-width: 400px; 
-            margin: 20px auto; 
             border-radius: 8px;
             overflow: hidden;
+            margin-top: 15px;
+            border: 2px solid #2a2a2a;
         }
-        input[type="file"] {
-            margin: 20px 0;
+        
+        .progress-text {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
-
-    <h1>QR Stream 🚀</h1>
-    <p>Transfer files between devices using only your camera.</p>
-
-    <!-- Navigation -->
-    <div class="card">
-        <button id="btn-show-send">Send a File</button>
-        <button id="btn-show-receive">Receive a File</button>
-    </div>
-
-    <!-- SENDER UI -->
-    <div id="sender-section" class="card hidden">
-        <h2>Send File</h2>
-        <p>Select a small image or video to convert into a QR stream.</p>
-        <input type="file" id="file-input" accept="image/*,video/*" />
-        <br>
-        <button id="btn-start-send" class="hidden">Start QR Stream</button>
+    <div class="app-container">
         
-        <div id="qr-container" class="hidden"></div>
-        <p id="send-progress"></p>
+        <div class="header">
+            <h1>QR Stream 🚀</h1>
+            <p>Optical File Transfer</p>
+        </div>
+
+        <!-- App Tabs -->
+        <div class="tabs">
+            <button id="btn-show-send" class="tab-btn active">Send File</button>
+            <button id="btn-show-receive" class="tab-btn">Receive File</button>
+        </div>
+
+        <!-- SENDER UI -->
+        <div id="sender-section" class="card">
+            <h3 style="margin-bottom: 5px;">Select a file</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Keep it under 50KB for best results</p>
+            
+            <input type="file" id="file-input" accept="image/*,video/*" />
+            <button id="btn-start-send" class="action-btn hidden">Start QR Stream</button>
+            
+            <div id="qr-container" class="hidden"></div>
+            <p id="send-progress" class="progress-text"></p>
+        </div>
+
+        <!-- RECEIVER UI -->
+        <div id="receiver-section" class="card hidden">
+            <h3 style="margin-bottom: 5px;">Ready to scan</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Point camera at the sender's screen</p>
+            
+            <button id="btn-start-receive" class="action-btn">Open Camera</button>
+            
+            <div id="reader"></div>
+            <p id="receive-progress" class="progress-text"></p>
+            <div id="result-container"></div>
+        </div>
+
     </div>
 
-    <!-- RECEIVER UI -->
-    <div id="receiver-section" class="card hidden">
-        <h2>Receive File</h2>
-        <p>Scan a QR stream to reconstruct the file.</p>
-        <button id="btn-start-receive">Open Camera</button>
-        
-        <div id="reader"></div>
-        <p id="receive-progress"></p>
-        <div id="result-container"></div>
-    </div>
-
-    <!-- The heavy lifting libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     
-    <!-- Your custom logic -->
-<script src="sender.js"></script>
+    <script>
+        // Tiny inline script just to handle making the tabs highlight correctly
+        const tabSend = document.getElementById('btn-show-send');
+        const tabReceive = document.getElementById('btn-show-receive');
+        
+        tabSend.addEventListener('click', () => {
+            tabSend.classList.add('active');
+            tabReceive.classList.remove('active');
+        });
+
+        tabReceive.addEventListener('click', () => {
+            tabReceive.classList.add('active');
+            tabSend.classList.remove('active');
+        });
+    </script>
+
+    <!-- Your existing logic scripts -->
+    <script src="sender.js"></script>
     <script src="receiver.js"></script>
 </body>
+</html>
