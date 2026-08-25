@@ -47,8 +47,17 @@ function handleScan(text) {
 }
 
 function finishTransfer() {
-    scanner.stop();
+    scanner.stop(); // Stops the camera
     receiveProgress.innerText = "Transfer Complete! 🎉";
+    
     const fullBase64 = receivedChunks.join('');
-    resultContainer.innerHTML = `<a href="${fullBase64}" download="received_file">Download File</a>`;
+    
+    // This displays the image AND gives you a nice download button
+    resultContainer.innerHTML = `
+        <img src="${fullBase64}" style="max-width: 100%; border-radius: 10px; margin-top: 15px;" />
+        <br>
+        <a href="${fullBase64}" download="received_file">
+            <button style="margin-top: 15px;">Download to Phone</button>
+        </a>
+    `;
 }
