@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Stream Transfer</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background-color: #121212; 
+            color: #ffffff; 
+            padding: 20px; 
+        }
+        .hidden { display: none !important; }
+        .card { 
+            background: #1e1e1e; 
+            padding: 20px; 
+            border-radius: 12px; 
+            max-width: 500px; 
+            margin: 20px auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        button { 
+            background: #6366f1; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin: 10px; 
+            transition: 0.2s;
+        }
+        button:hover { background: #4f46e5; }
+        #qr-container { 
+            margin-top: 20px; 
+            display: flex; 
+            justify-content: center; 
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #reader { 
+            width: 100%; 
+            max-width: 400px; 
+            margin: 20px auto; 
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>QR Stream 🚀</h1>
+    <p>Transfer files between devices using only your camera.</p>
+
+    <!-- Navigation -->
+    <div class="card">
+        <button id="btn-show-send">Send a File</button>
+        <button id="btn-show-receive">Receive a File</button>
+    </div>
+
+    <!-- SENDER UI -->
+    <div id="sender-section" class="card hidden">
+        <h2>Send File</h2>
+        <p>Select a small image or video to convert into a QR stream.</p>
+        <input type="file" id="file-input" accept="image/*,video/*" />
+        <br>
+        <button id="btn-start-send" class="hidden">Start QR Stream</button>
+        
+        <div id="qr-container" class="hidden"></div>
+        <p id="send-progress"></p>
+    </div>
+
+    <!-- RECEIVER UI -->
+    <div id="receiver-section" class="card hidden">
+        <h2>Receive File</h2>
+        <p>Scan a QR stream to reconstruct the file.</p>
+        <button id="btn-start-receive">Open Camera</button>
+        
+        <div id="reader"></div>
+        <p id="receive-progress"></p>
+        <div id="result-container"></div>
+    </div>
+
+    <!-- The heavy lifting libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <!-- Your custom logic -->
+<script src="sender.js"></script>
+    <script src="receiver.js"></script>
+</body>
