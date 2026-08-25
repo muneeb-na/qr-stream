@@ -22,13 +22,13 @@ fileInput.addEventListener('change', (e) => {
     const reader = new FileReader();
     reader.onload = (event) => {
         const base64String = event.target.result;
-        // Chop string into 200 character pieces
-        const size = 200;
+        
+        // FIX 1: Chunks are now 100 characters so they fit easily!
+        const size = 100; 
         const numChunks = Math.ceil(base64String.length / size);
         chunks = [];
         
         for (let i = 0; i < numChunks; i++) {
-            // Tag each chunk with its index (e.g., "0/50|data...")
             chunks.push(`${i}/${numChunks}|${base64String.substring(i * size, (i + 1) * size)}`);
         }
         btnStartSend.classList.remove('hidden');
@@ -39,7 +39,14 @@ fileInput.addEventListener('change', (e) => {
 btnStartSend.addEventListener('click', () => {
     qrContainer.classList.remove('hidden');
     qrContainer.innerHTML = ''; 
-    const qrcode = new QRCode(qrContainer, { width: 300, height: 300 });
+    
+    // FIX 2: Added CorrectLevel.L to maximize data capacity
+    const qrcode = new QRCode(qrContainer, { 
+        width: 300, 
+        height: 300,
+        correctLevel: QRCode.CorrectLevel.L 
+    });
+    
     btnStartSend.disabled = true;
     
     // Rapid fire QR codes every 200ms
@@ -47,6 +54,6 @@ btnStartSend.addEventListener('click', () => {
         qrcode.clear();
         qrcode.makeCode(chunks[currentFrame]);
         sendProgress.innerText = `Flashing frame ${currentFrame + 1} of ${chunks.length}`;
-        currentFrame = (currentFrame + 1) % chunks.length; // Loop continuously 
+        currentFrame = (currentFrame + 1) % chunks.length; 
     }, 200); 
 });
